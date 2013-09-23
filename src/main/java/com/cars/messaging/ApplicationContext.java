@@ -11,12 +11,16 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
+/**
+ * This context contains beans that can be used across the application.
+ * 
+ */
 @Configuration
 @ComponentScan
 public class ApplicationContext {
 
 	static String mailboxDestination = "mailbox-destination";
-	
+
 	@Bean
 	ConnectionFactory connectionFactory() {
 		return new CachingConnectionFactory(new ActiveMQConnectionFactory(
@@ -33,17 +37,20 @@ public class ApplicationContext {
 	}
 
 	@Bean
-    SimpleMessageListenerContainer container(final MessageListenerAdapter messageListener,
-            final ConnectionFactory connectionFactory) {
-        return new SimpleMessageListenerContainer() {{
-            setMessageListener(messageListener);
-            setConnectionFactory(connectionFactory);
-            setDestinationName(mailboxDestination);
-        }};
-    }
-	
-    @Bean
-    JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
-        return new JmsTemplate(connectionFactory);
-    }
+	SimpleMessageListenerContainer container(
+			final MessageListenerAdapter messageListener,
+			final ConnectionFactory connectionFactory) {
+		return new SimpleMessageListenerContainer() {
+			{
+				setMessageListener(messageListener);
+				setConnectionFactory(connectionFactory);
+				setDestinationName(mailboxDestination);
+			}
+		};
+	}
+
+	@Bean
+	JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
+		return new JmsTemplate(connectionFactory);
+	}
 }
